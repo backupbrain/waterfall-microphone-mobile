@@ -1,56 +1,52 @@
-# Welcome to your Expo app 👋
+# Waterfall
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A live waterfall spectrogram of the sound around you, built with Expo for iOS, Android, and the web.
 
-## Get started
+The app listens to the microphone, runs a 4096-point FFT over the stream, and paints each spectrum as a new row at the top of a GPU-rendered waterfall that falls down the screen. Left to right is pitch, from 0 Hz up to the microphone's Nyquist frequency (half the sample rate, typically 24 kHz). Brightness is loudness, auto-ranged so quiet rooms still glow.
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+pnpm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+```bash
+npx expo start
+```
 
-### Other setup steps
+Press `w` for the web build, `i` for the iOS Simulator, or `a` for an Android emulator. Expo Go works on both platforms because every native module used here (`expo-audio`, `expo-gl`, `expo-blur`, `react-native-svg`) ships inside Expo Go. For a development build instead, run `npx expo run:ios` or `npx expo run:android`.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Microphone capture in the browser requires HTTPS or `localhost`.
 
-## Learn more
+Simulator notes: the iOS 17.x Simulator runtime on Apple Silicon crashes inside Apple's OpenGL ES shader compiler (`cvmsServerElementBuild`) for any GL app, including this one; use an iOS 18 or iOS 26 simulator, or a real device. The Simulator forwards the Mac's default input device, so the waterfall only shows sound if the Simulator app has microphone access in macOS System Settings.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Controls
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Tap the waterfall to freeze it; tap again to resume.
+- Drag across the waterfall to read the frequency under your finger (hover with a mouse on the web).
+- The bottom bar pauses, cycles the colour palette, switches between linear and logarithmic pitch axes, and opens the info panel.
+- On the web, Space pauses, `P` changes palette, `L` toggles the scale, and `I` opens the info panel.
 
-## Join the community
+## How it is built
 
-Join our community of developers creating universal apps.
+- `src/audio/` captures PCM audio. On iOS and Android it uses `expo-audio`'s `useAudioStream`; on the web it uses the Web Audio API with an `AudioWorklet` (falling back to `ScriptProcessorNode`). Both feed the same `SpectrumEngine`, which windows the samples, runs the FFT, converts to decibels, and quantises rows into a bounded queue.
+- `src/waterfall/` renders with `expo-gl`. Each row is a single-row `texSubImage2D` into a ring-buffer texture; a fragment shader maps screen rows back to texture rows and colours them through a 1-D palette lookup, so no pixels are ever copied on the CPU. The same WebGL code runs on all three platforms.
+- `src/components/` is the UI, built from [HeroUI Native](https://heroui.com/docs/native) components (`Button`, `Card`, `Chip`, `Dialog`, `Surface`, `Tabs`, `Typography`) styled with Tailwind via Uniwind. The theme tokens live in `src/global.css`.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Scripts
+
+```bash
+pnpm lint
+```
+
+```bash
+pnpm typecheck
+```
+
+```bash
+pnpm build:web
+```
+
+## License
+
+MIT. See [LICENSE](LICENSE).

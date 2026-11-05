@@ -1,9 +1,101 @@
-:root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+@import 'tailwindcss';
+@import 'uniwind';
+@import 'heroui-native/styles';
+
+@source '../node_modules/heroui-native/lib';
+
+/*
+ * The waterfall lives on pure black, so both colour schemes resolve to the same
+ * dark palette. Only the tokens that differ from HeroUI's defaults are set here.
+ */
+@layer theme {
+  :root {
+    @variant light {
+      --background: #000000;
+      --foreground: #f3f3f5;
+      --surface: rgba(32, 32, 37, 0.84);
+      --surface-foreground: #f3f3f5;
+      --surface-secondary: #27272c;
+      --surface-tertiary: #313137;
+      --overlay: #1b1b20;
+      --overlay-foreground: #f3f3f5;
+      --backdrop: rgba(0, 0, 0, 0.7);
+      --muted: #a2a3ab;
+      --default: #2d2d33;
+      --default-foreground: #f3f3f5;
+      --accent: #f2b24e;
+      --accent-foreground: #000000;
+      --success: #5fd38a;
+      --success-foreground: #09130d;
+      --warning: #f0c15c;
+      --warning-foreground: #161104;
+      --danger: #f06a60;
+      --danger-foreground: #ffffff;
+      --segment: #3d3d45;
+      --segment-foreground: #fafafa;
+      --border: rgba(255, 255, 255, 0.12);
+      --separator: rgba(255, 255, 255, 0.1);
+      --link: var(--foreground);
+      --radius: 0.75rem;
+    }
+
+    @variant dark {
+      --background: #000000;
+      --foreground: #f3f3f5;
+      --surface: rgba(32, 32, 37, 0.84);
+      --surface-foreground: #f3f3f5;
+      --surface-secondary: #27272c;
+      --surface-tertiary: #313137;
+      --overlay: #1b1b20;
+      --overlay-foreground: #f3f3f5;
+      --backdrop: rgba(0, 0, 0, 0.7);
+      --muted: #a2a3ab;
+      --default: #2d2d33;
+      --default-foreground: #f3f3f5;
+      --accent: #f2b24e;
+      --accent-foreground: #000000;
+      --success: #5fd38a;
+      --success-foreground: #09130d;
+      --warning: #f0c15c;
+      --warning-foreground: #161104;
+      --danger: #f06a60;
+      --danger-foreground: #ffffff;
+      --segment: #3d3d45;
+      --segment-foreground: #fafafa;
+      --border: rgba(255, 255, 255, 0.12);
+      --separator: rgba(255, 255, 255, 0.1);
+      --link: var(--foreground);
+      --radius: 0.75rem;
+    }
+  }
+}
+
+/*
+ * HeroUI derives press-highlight colours from the *-hover tokens with colorKit, which
+ * cannot parse the color-mix() expressions the defaults use on web (or the lab() form
+ * browsers report for oklch). Plain literals keep the console clean and give the dark
+ * surfaces a visible press state.
+ */
+@theme inline static {
+  --color-default-hover: #4a4b53;
+  --color-accent-hover: #f5c26a;
+  --color-success-hover: #6fdc8f;
+  --color-warning-hover: #f0c15c;
+  --color-danger-hover: #f06a60;
+  --color-default-soft-hover: rgba(255, 255, 255, 0.08);
+  --color-accent-soft-hover: rgba(245, 194, 106, 0.2);
+  --color-danger-soft-hover: rgba(240, 106, 96, 0.2);
+  --color-warning-soft-hover: rgba(240, 193, 92, 0.2);
+  --color-success-soft-hover: rgba(111, 220, 143, 0.2);
+}
+
+@variant web {
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    background: #000;
+    overscroll-behavior: none;
+  }
 }

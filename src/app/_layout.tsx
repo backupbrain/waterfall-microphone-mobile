@@ -1,18 +1,24 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import '@/global.css';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { HeroUINativeProvider } from 'heroui-native';
+import { useLayoutEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Uniwind } from 'uniwind';
 
-SplashScreen.preventAutoHideAsync();
+export default function RootLayout() {
+  useLayoutEffect(() => {
+    // The waterfall is always drawn on black, so the UI always uses the dark theme.
+    Uniwind.setTheme('dark');
+  }, []);
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
+      <HeroUINativeProvider config={{ textProps: { maxFontSizeMultiplier: 1.6 }, toast: 'disabled' }}>
+        <StatusBar style="light" />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#000000' } }} />
+      </HeroUINativeProvider>
+    </GestureHandlerRootView>
   );
 }
